@@ -16,5 +16,8 @@
     "url": "https://github.com/martianMethods/project-phobos/issues"
   },
   "homepage": "https://github.com/martianMethods/project-phobos#readme",
-  "keywords": []
+  "keywords": [],
+  "dependencies": {
+    "pg": "^8.0.0"
+  }
 }
