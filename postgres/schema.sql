@@ -1,11 +1,10 @@
+DROP DATABASE IF EXISTS qa;
 CREATE DATABASE qa;
 \c qa;
-CREATE TABLE products(
-  id INT PRIMARY KEY NOT NULL
-);
+
 CREATE TABLE questions(
-  id INT PRIMARY KEY NOT NULL,
-  product_id INT REFERENCES products(id),
+  id SERIAL PRIMARY KEY NOT NULL,
+  product_id INT NOT NULL,
   body TEXT,
   date_written DATE,
   asker_name TEXT,
@@ -14,7 +13,7 @@ CREATE TABLE questions(
   helpful INT
 );
 CREATE TABLE answers(
-  id INT PRIMARY KEY NOT NULL,
+  id SERIAL PRIMARY KEY NOT NULL,
   question_id INT REFERENCES questions(id),
   body TEXT,
   date_written DATE,
@@ -24,7 +23,7 @@ CREATE TABLE answers(
   helpful INT
 );
 CREATE TABLE answers_photos(
-  id INT PRIMARY KEY NOT NULL,
+  id SERIAL PRIMARY KEY NOT NULL,
   answers_id INT REFERENCES answers(id),
   url TEXT
 );
