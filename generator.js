@@ -61,10 +61,10 @@ const photo = () => {
 
 
 performance.mark("A");
-for (let i = 0; i < 10000000; i++) {
+// for (let i = 0; i < 10000000; i++) {
   // fs.appendFileSync("./newquestions.csv", question());
   // fs.appendFileSync("./newanswers.csv", answer());
-  fs.appendFileSync("./newphotos2.csv", photo());
-}
+  // fs.appendFileSync("./newphotos2.csv", photo());
+// }
 performance.mark("B");
 performance.measure("A to B", "A", "B");
