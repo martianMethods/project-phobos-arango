@@ -18,9 +18,8 @@
   "homepage": "https://github.com/martianMethods/project-phobos#readme",
   "keywords": [],
   "dependencies": {
+    "csv": "^5.3.2",
     "faker": "^4.1.0",
-    "json-schema-faker": "^0.5.0-rcv.24",
-    "pg": "^8.0.0",
-    "uuid": "^7.0.3"
+    "pg": "^8.0.0"
   }
 }

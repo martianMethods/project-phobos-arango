@@ -1,7 +1,7 @@
-const faker = require("faker");
 const fs = require("fs");
 const { PerformanceObserver, performance } = require('perf_hooks');
-
+const faker = require("faker");
+const parse = require('csv-parse/lib/sync')
 const obs = new PerformanceObserver((items) => {
   console.log(Math.round(items.getEntries()[0].duration/60000)+'m');
   performance.clearMarks();
@@ -42,20 +42,29 @@ const answer = () => {
   return `${output.id},${output.question_id},"${output.body}","${output.date_written}","${output.answerer_name}","${output.answerer_email}",${output.reported},${output.helpful}\n`;
 };
 
+const input = fs.readFileSync('./answers_photos.csv')
+const records = parse(input, {
+  columns: true,
+  to: 1000
+})
+records.pop()
+records.pop()
+
 const photo = () => {
   let output = {
     id: ++phid,
     answer_id: Math.ceil(Math.random() * 10000000) + 12392946,
-    url: faker.image.fashion(),
+    url: records[Math.floor(Math.random()*1000)].url,
   };
   return `${output.id},${output.answer_id},"${output.url}"\n`;
 };
 
+
 performance.mark("A");
-for (let i = 0; i < 20; i++) {
-  fs.appendFileSync("./newquestions.csv", question());
-  fs.appendFileSync("./newanswers.csv", answer());
-  fs.appendFileSync("./newphotos.csv", photo());
+for (let i = 0; i < 10000000; i++) {
+  // fs.appendFileSync("./newquestions.csv", question());
+  // fs.appendFileSync("./newanswers.csv", answer());
+  fs.appendFileSync("./newphotos2.csv", photo());
 }
 performance.mark("B");
 performance.measure("A to B", "A", "B");
