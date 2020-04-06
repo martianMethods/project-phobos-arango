@@ -19,6 +19,7 @@
   "keywords": [],
   "dependencies": {
     "csv": "^5.3.2",
+    "express": "^4.17.1",
     "faker": "^4.1.0",
     "pg": "^8.0.0"
   }

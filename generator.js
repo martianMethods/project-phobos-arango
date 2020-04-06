@@ -5,6 +5,8 @@ const parse = require('csv-parse/lib/sync')
 const stringify = require('csv-stringify')
 const obs = new PerformanceObserver((items) => {
   console.log(Math.round(items.getEntries()[0].duration/60000)+'m');
+  console.log(Math.round(items.getEntries()[1].duration/60000)+'m');
+  console.log(Math.round(items.getEntries()[2].duration/60000)+'m');
   performance.clearMarks();
 });
 obs.observe({ entryTypes: ['measure'] });
@@ -18,7 +20,7 @@ var phid = 3717892;
 const question = () => {
   let output = {
     id: ++qid,
-    product_id: Math.ceil(Math.random() * 260564),
+    product_id: Math.ceil(Math.random() * 1000011),
     body: faker.lorem.sentence().slice(0, -1) + "?",
     date_written: faker.date.past(5).toJSON().slice(0, 10),
     asker_name: faker.name.firstName(),
@@ -63,9 +65,27 @@ var wstream = fs.createWriteStream("./newquestions.csv")
 wstream.write('id,product_id,body,date_written,asker_name,asker_email,reported,helpful\n')
 for (let i = 0; i < 10000000; i++) {
   wstream.write(question());
-  // fs.appendFileSync("./newanswers.csv", answer());
-  // fs.appendFileSync("./newphotos.csv", photo());
 }
 wstream.end()
 performance.mark("B");
 performance.measure("A to B", "A", "B");
+
+performance.mark("C");
+var wstream2 = fs.createWriteStream("./newanswers.csv")
+wstream.write('id,question_id,body,date_written,answerer_name,answerer_email,reported,helpful\n')
+for (let i = 0; i < 10000000; i++) {
+  wstream.write(answer());
+}
+wstream.end()
+performance.mark("D");
+performance.measure("C to D", "C", "D");
+
+performance.mark("E");
+var wstream3 = fs.createWriteStream("./newphotos.csv")
+wstream.write('id,answer_id,url\n')
+for (let i = 0; i < 10000000; i++) {
+  wstream.write(photo());
+}
+wstream.end()
+performance.mark("F");
+performance.measure("E to F", "E", "F");
