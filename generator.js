@@ -42,29 +42,26 @@ const answer = () => {
   return `${output.id},${output.question_id},"${output.body}","${output.date_written}","${output.answerer_name}","${output.answerer_email}",${output.reported},${output.helpful}\n`;
 };
 
-const input = fs.readFileSync('./answers_photos.csv')
+const input = fs.readFileSync('./photo_urls.csv')
 const records = parse(input, {
-  columns: true,
-  to: 1000
+  skip_empty_lines:true
 })
-records.pop()
-records.pop()
 
 const photo = () => {
   let output = {
     id: ++phid,
     answer_id: Math.ceil(Math.random() * 10000000) + 12392946,
-    url: records[Math.floor(Math.random()*1000)].url,
+    url: records[Math.floor(Math.random()*records.length-1)+1][0],
   };
   return `${output.id},${output.answer_id},"${output.url}"\n`;
 };
 
 
 performance.mark("A");
-// for (let i = 0; i < 10000000; i++) {
+for (let i = 0; i < 10; i++) {
   // fs.appendFileSync("./newquestions.csv", question());
   // fs.appendFileSync("./newanswers.csv", answer());
-  // fs.appendFileSync("./newphotos2.csv", photo());
-// }
+  fs.appendFileSync("./newphotos.csv", photo());
+}
 performance.mark("B");
 performance.measure("A to B", "A", "B");
