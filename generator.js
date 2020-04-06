@@ -2,6 +2,7 @@ const fs = require("fs");
 const { PerformanceObserver, performance } = require('perf_hooks');
 const faker = require("faker");
 const parse = require('csv-parse/lib/sync')
+const stringify = require('csv-stringify')
 const obs = new PerformanceObserver((items) => {
   console.log(Math.round(items.getEntries()[0].duration/60000)+'m');
   performance.clearMarks();
@@ -9,15 +10,15 @@ const obs = new PerformanceObserver((items) => {
 obs.observe({ entryTypes: ['measure'] });
 
 
-
-var qid = 3521634;
+// 260564 product ids
+var qid = 3521634; // 3521634 question, fewer ids
 var aid = 12392946;
 var phid = 3717892;
 
 const question = () => {
   let output = {
     id: ++qid,
-    product_id: Math.ceil(Math.random() * 1000011),
+    product_id: Math.ceil(Math.random() * 260564),
     body: faker.lorem.sentence().slice(0, -1) + "?",
     date_written: faker.date.past(5).toJSON().slice(0, 10),
     asker_name: faker.name.firstName(),
@@ -58,10 +59,13 @@ const photo = () => {
 
 
 performance.mark("A");
-for (let i = 0; i < 10; i++) {
-  // fs.appendFileSync("./newquestions.csv", question());
+var wstream = fs.createWriteStream("./newquestions.csv")
+wstream.write('id,product_id,body,date_written,asker_name,asker_email,reported,helpful\n')
+for (let i = 0; i < 10000000; i++) {
+  wstream.write(question());
   // fs.appendFileSync("./newanswers.csv", answer());
-  fs.appendFileSync("./newphotos.csv", photo());
+  // fs.appendFileSync("./newphotos.csv", photo());
 }
+wstream.end()
 performance.mark("B");
 performance.measure("A to B", "A", "B");
