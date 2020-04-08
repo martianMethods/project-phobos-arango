@@ -14,10 +14,11 @@ app.use(bodyParser.json());
 
 app.get("/qa/:product_id/", (req, res) => {
   let count = Number(req.query.count) || 5;
+  let page = Number(req.query.page) || 1;
   db.query(
     aql`for q in questions
   filter q.product_id == ${Number(req.params.product_id)} && q.reported == 0
-  limit ${count}
+  limit ${(page - 1) * count}, ${count}
   return merge(q,{answers:merge(
     for a in answers
     filter to_number(q._key) == a.question_id && a.reported == 0
@@ -56,6 +57,7 @@ app.get("/qa/:product_id/", (req, res) => {
       });
       res.send({
         product_id: req.params.product_id,
+        page: page,
         count: count,
         results: output,
       });
@@ -68,11 +70,12 @@ app.get("/qa/:product_id/", (req, res) => {
 
 app.get("/qa/:question_id/answers/", (req, res) => {
   let count = Number(req.query.count) || 5;
+  let page = Number(req.query.page) || 1;
   db.query(
     aql`
     for a in answers
     filter ${Number(req.params.question_id)} == a.question_id && a.reported == 0
-    limit ${count}
+    limit ${(page - 1) * count}, ${count}
     return merge(a,{photos:
       (for p in answers_photos
       filter to_number(a._key) == p.answer_id
@@ -98,6 +101,7 @@ app.get("/qa/:question_id/answers/", (req, res) => {
       });
       res.send({
         question: req.params.question_id,
+        page: page,
         count: count,
         results: output,
       });
@@ -130,37 +134,89 @@ app.post("/qa/:product_id", (req, res) => {
 });
 
 app.post("/qa/:question_id/answers", (req, res) => {
-  // db.query(
-  //   aql`
-  // insert {
-  //   question_id:${Number(req.params.question_id)}, 
-  //   body:${req.body.body},
-  //   date_written: ${new Date().toISOString().slice(0, -14)},
-  //   answerer_name:${req.body.name}, 
-  //   answerer_email:${req.body.email}, 
-  //   reported: 0, 
-  //   helpful: 0
-  // } into answers
-  // let inserted = NEW
-  // let photos = ${req.body.photos}                                            DOES NOT PROPERLY READ AS ARANGO ARRAYs
-  // for p in photos
-  // insert {answer_id:to_number(inserted._key),url:p} into answers_photos
-  // `
-  // )
-  //   .then(() => res.sendStatus(201))
-  //   .catch((error) => {
-  //     console.error(error);
-  //     res.sendStatus(400);
-  //   });
+  db.query(
+    aql`
+  insert {
+    question_id:${Number(req.params.question_id)}, 
+    body:${req.body.body},
+    date_written: ${new Date().toISOString().slice(0, -14)},
+    answerer_name:${req.body.name}, 
+    answerer_email:${req.body.email}, 
+    reported: 0, 
+    helpful: 0
+  } into answers
+  let inserted = NEW
+  let photos = ${req.body.photos}
+  for p in photos
+  insert {answer_id:to_number(inserted._key),url:p} into answers_photos
+  `
+  )
+    .then(() => res.sendStatus(201))
+    .catch((error) => {
+      console.error(error);
+      res.sendStatus(400);
+    });
 });
 
-app.put("/qa/question/:question_id/helpful", (req, res) => {});
+app.put("/qa/question/:question_id/helpful", (req, res) => {
+  db.query(
+    aql`
+    for q in questions
+    filter q._key == to_string(${req.params.question_id})
+    update q with {helpful: q.helpful +1} in questions
+  `
+  )
+    .then(() => res.sendStatus(204))
+    .catch((error) => {
+      console.error(error);
+      res.sendStatus(400);
+    });
+});
 
-app.put("/qa/question/:question_id/report", (req, res) => {});
+app.put("/qa/question/:question_id/report", (req, res) => {
+  db.query(
+    aql`
+    for q in questions
+    filter q._key == to_string(${req.params.question_id})
+    update q with {reported: q.reported +1} in questions
+  `
+  )
+    .then(() => res.sendStatus(204))
+    .catch((error) => {
+      console.error(error);
+      res.sendStatus(400);
+    });
+});
 
-app.put("/qa/answer/:answer_id/helpful", (req, res) => {});
+app.put("/qa/answer/:answer_id/helpful", (req, res) => {
+  db.query(
+    aql`
+    for a in answers
+    filter a._key == to_string(${req.params.answer_id})
+    update a with {helpful: a.helpful +1} in answers
+  `
+  )
+    .then(() => res.sendStatus(204))
+    .catch((error) => {
+      console.error(error);
+      res.sendStatus(400);
+    });
+});
 
-app.put("/qa/answer/:answer_id/report", (req, res) => {});
+app.put("/qa/answer/:answer_id/report", (req, res) => {
+  db.query(
+    aql`
+    for a in answers
+    filter a._key == to_string(${req.params.answer_id})
+    update a with {reported: a.reported +1} in answers
+  `
+  )
+    .then(() => res.sendStatus(204))
+    .catch((error) => {
+      console.error(error);
+      res.sendStatus(400);
+    });
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
