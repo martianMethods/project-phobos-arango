@@ -1,13 +1,30 @@
 require('newrelic');
+const cluster = require('cluster')
 const express = require("express");
 const bodyParser = require("body-parser");
+const arangojs = require("arangojs");
+const arangoAuth = require("./arangoAuth.js");
+const numCPUs = require('os').cpus().length;
+const aql = arangojs.aql;
+
+if (cluster.isMaster) {
+  console.log(`Master ${process.pid} is running`);
+
+  // Fork workers.
+  for (let i = 0; i < numCPUs; i++) {
+    cluster.fork();
+  }
+
+  cluster.on('exit', (worker, code, signal) => {
+    console.log(`worker ${worker.process.pid} died`);
+  });
+} else {
+ 
 const app = express();
-var arangojs = require("arangojs");
-var aql = arangojs.aql;
-var db = new arangojs.Database({
+const db = new arangojs.Database({
   url: "http://localhost:8529",
 });
-var arangoAuth = require("./arangoAuth.js");
+
 db.useBasicAuth(arangoAuth.user, arangoAuth.password);
 app.use(bodyParser.json());
 
@@ -219,7 +236,10 @@ app.put("/qa/answer/:answer_id/report", (req, res) => {
     });
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
   console.log(`Web server running on: http://localhost:${PORT}`);
 });
+
+console.log(`Worker ${process.pid} started`);
+}

@@ -1,12 +1,24 @@
-import http from 'k6/http';
-import { sleep } from 'k6';
+import http from "k6/http";
+import { check, sleep } from "k6";
+import { Rate } from "k6/metrics";
 
-export let options ={
-  duration: '10s',
-  vus: 1000
-}
+export let errorRate = new Rate("errors");
 
-export default function() {
-  http.get(`http://localhost:3000/qa/${Math.ceil(Math.random()*1000000)}`);
-  sleep(1);
+export let options = {
+  vus: 20,
+  thresholds: {
+    http_req_duration: ["max<2000"],
+  },
+  duration: "5s",
+  throw: true
+};
+
+export default function () {
+  var url = `http://localhost:4000/qa/${Math.ceil(Math.random() * 1000000)}`;
+  for (let i = 0; i < 1000; i++) {
+    check(http.get(url), {
+      "status is 200": (r) => r.status == 200,
+    }) || errorRate.add(1);
+    sleep(0.001);
+  }
 }
