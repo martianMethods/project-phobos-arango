@@ -24,7 +24,7 @@ setInterval(() => {
 }, 3600000);
 
 app.use(bodyParser.json());
-if (arangoUrl === "http://localhost:8529") {
+if (!arangoUrl) {
   app.use(cors());
 }
 
