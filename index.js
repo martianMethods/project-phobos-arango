@@ -4,9 +4,9 @@ const bodyParser = require("body-parser");
 const arangojs = require("arangojs");
 const aql = arangojs.aql;
 const arangoAuth = require("./arangoAuth.js") || process.env.arangoAuth || null;
-const arangoUrl = process.env.arangoUrl || "http://localhost:8529";
+var arangoUrl = process.env.arangoUrl || "http://localhost:8529";
 try {
-  const arangoUrl = require("./arangoUrl.js");
+  arangoUrl = require("./arangoUrl.js");
 } catch {}
 if (arangoUrl === "http://localhost:8529") {
   cors = require("cors");
