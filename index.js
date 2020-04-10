@@ -4,11 +4,11 @@ const bodyParser = require("body-parser");
 const arangojs = require("arangojs");
 const aql = arangojs.aql;
 const arangoAuth = require("./arangoAuth.js") || process.env.arangoAuth || null;
-var arangoUrl = process.env.arangoUrl || "http://localhost:8529";
+var arangoUrl = process.env.arangoUrl || null;
 try {
-  arangoUrl = require("./arangoUrl.js");
+  arangoUrl = require("./arangoUrl");
 } catch {}
-if (arangoUrl === "http://localhost:8529") {
+if (!arangoUrl) {
   cors = require("cors");
 }
 
@@ -16,8 +16,13 @@ const app = express();
 const db = new arangojs.Database({
   url: arangoUrl,
 });
-
 arangoAuth && db.useBasicAuth(arangoAuth.user, arangoAuth.password);
+
+db.acquireHostList().catch((e) => true);
+setInterval(() => {
+  db.acquireHostList().catch((e) => true);
+}, 3600000);
+
 app.use(bodyParser.json());
 if (arangoUrl === "http://localhost:8529") {
   app.use(cors());
@@ -229,6 +234,9 @@ app.put("/qa/answer/:answer_id/report", (req, res) => {
 });
 
 const PORT = process.env.PORT || 4000;
+try {
+  PORT = require("./expressPort");
+} catch {}
 app.listen(PORT, () => {
   console.log(`Web server running on: http://localhost:${PORT}`);
 });
