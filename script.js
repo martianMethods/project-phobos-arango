@@ -15,7 +15,7 @@ export let options = {
 
 export default function () {
   var url = `http://localhost:4000/qa/${Math.ceil(Math.random() * 1000000)}`;
-  for (let i = 0; i < 1000; i++) {
+  for (let i = 0; i < 350; i++) {
     check(http.get(url), {
       "status is 200": (r) => r.status == 200,
     }) || errorRate.add(1);

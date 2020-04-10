@@ -23,5 +23,8 @@
     "express": "^4.17.1",
     "faker": "^4.1.0",
     "newrelic": "^6.5.0"
+  },
+  "devDependencies": {
+    "cors": "^2.8.5"
   }
 }
