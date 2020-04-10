@@ -1,1 +1,1 @@
-module.exports = newrelicAuth = 'INSERT AUTH KEY HERE'
+module.exports = newrelicAuth = "INSERT AUTH KEY HERE";

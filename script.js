@@ -10,7 +10,7 @@ export let options = {
     http_req_duration: ["max<2000"],
   },
   duration: "5s",
-  throw: true
+  throw: true,
 };
 
 export default function () {
