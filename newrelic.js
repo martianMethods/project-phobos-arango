@@ -13,7 +13,7 @@ exports.config = {
   /**
    * Your New Relic license key.
    */
-  license_key: 'LICENSE KEY GOES HERE',
+  license_key: require('newrelicAuth.js') || process.env.newrelicAuth || 'ADD NEW RELIC AUTH',
   logging: {
     /**
      * Level at which to log. 'trace' is most useful to New Relic when diagnosing
