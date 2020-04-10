@@ -28,8 +28,6 @@ if (arangoUrl === "http://localhost:8529") {
   app.use(cors());
 }
 
-// app.use(express.static(path.join(__dirname, "../client/public")));
-
 app.get("/qa/:product_id/", (req, res) => {
   let count = Number(req.query.count) || 5;
   let page = Number(req.query.page) || 1;
