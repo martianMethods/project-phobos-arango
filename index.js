@@ -3,7 +3,10 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const arangojs = require("arangojs");
 const aql = arangojs.aql;
-const arangoAuth = require("./arangoAuth.js") || process.env.arangoAuth || null;
+var arangoAuth = process.env.arangoAuth || null;
+try {
+  arangoAuth = require("./arangoAuth.js");
+} catch {}
 var arangoUrl = process.env.arangoUrl || null;
 try {
   arangoUrl = require("./arangoUrl");
