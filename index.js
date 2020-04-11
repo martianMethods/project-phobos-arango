@@ -1,25 +1,19 @@
-// require("newrelic");
+require('dotenv').config()
+require("newrelic");
 const express = require("express");
 const bodyParser = require("body-parser");
 const arangojs = require("arangojs");
 const aql = arangojs.aql;
-var arangoAuth = process.env.arangoAuth || null;
-try {
-  arangoAuth = require("./arangoAuth.js");
-} catch {}
-var arangoUrl = process.env.arangoUrl || null;
-try {
-  arangoUrl = require("./arangoUrl");
-} catch {}
-if (!arangoUrl) {
+if (!process.env.arangoUrl) {
   cors = require("cors");
 }
 
 const app = express();
 const db = new arangojs.Database({
-  url: arangoUrl,
+  url: process.env.arangoUrl,
 });
-arangoAuth && db.useBasicAuth(arangoAuth.user, arangoAuth.password);
+
+db.useBasicAuth(process.env.arangoUser, process.env.arangoPassword);
 
 db.acquireHostList().catch((e) => true);
 setInterval(() => {
@@ -27,7 +21,7 @@ setInterval(() => {
 }, 3600000);
 
 app.use(bodyParser.json());
-if (!arangoUrl) {
+if (!process.env.arangoUrl) {
   app.use(cors());
 }
 

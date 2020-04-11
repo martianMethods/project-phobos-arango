@@ -5,10 +5,6 @@
  * See lib/config/default.js in the agent distribution for a more complete
  * description of configuration variables and their potential values.
  */
-var key = process.env.newrelicAuth || "ADD NEW RELIC KEY";
-try {
-  key = require("./newrelicAuth");
-} catch {}
 
 exports.config = {
   /**
@@ -18,7 +14,7 @@ exports.config = {
   /**
    * Your New Relic license key.
    */
-  license_key: key,
+  license_key: process.env.newRelicAuth,
   logging: {
     /**
      * Level at which to log. 'trace' is most useful to New Relic when diagnosing

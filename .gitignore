@@ -1,17 +1,3 @@
-1086046.png
-1086046.svg
-answers_photos.csv
-answers.csv
-photos.csv
-questions.csv
-Various Diagrams - SDCCSV.png
 node_modules
-legacyQA.sql
-newanswers.csv
-newphotos.csv
-newquestions.csv
-newphotos2.csv
-newphotos3.csv
-arangoAuth.js
 newrelic_agent.log
-newrelicAuth.js
+.env
