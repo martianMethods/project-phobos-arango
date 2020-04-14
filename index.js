@@ -3,6 +3,7 @@ require("newrelic");
 const express = require("express");
 const bodyParser = require("body-parser");
 const arangojs = require("arangojs");
+const path = require("path")
 const aql = arangojs.aql;
 if (!process.env.arangoUrl) {
   cors = require("cors");
@@ -25,8 +26,7 @@ if (!process.env.arangoUrl) {
   app.use(cors());
 }
 
-app.use('/loaderio-c6793536e09a36257c2e7b634e994e9f/', express.static(path.join(__dirname, 'public')))
-
+app.use('/', express.static(path.join(__dirname, 'public')))
 
 app.get("/qa/:product_id/", (req, res) => {
   let count = Number(req.query.count) || 5;
