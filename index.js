@@ -25,6 +25,9 @@ if (!process.env.arangoUrl) {
   app.use(cors());
 }
 
+app.use('/loaderio-c6793536e09a36257c2e7b634e994e9f/', express.static(path.join(__dirname, 'public')))
+
+
 app.get("/qa/:product_id/", (req, res) => {
   let count = Number(req.query.count) || 5;
   let page = Number(req.query.page) || 1;
