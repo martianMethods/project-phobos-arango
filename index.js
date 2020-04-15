@@ -1,17 +1,21 @@
-require('dotenv').config()
+"use strict";
+require("dotenv").config();
 require("newrelic");
 const express = require("express");
 const bodyParser = require("body-parser");
 const arangojs = require("arangojs");
-const path = require("path")
+const path = require("path");
 const aql = arangojs.aql;
-if (!process.env.arangoUrl) {
-  cors = require("cors");
-}
 
 const app = express();
+
+if (!process.env.arangoUrl) {
+  const cors = require("cors");
+  app.use(cors());
+}
+
 const db = new arangojs.Database({
-  url: process.env.arangoUrl,
+  url: process.env.arangoUrl || "http://localhost:8529",
 });
 
 db.useBasicAuth(process.env.arangoUser, process.env.arangoPassword);
@@ -22,11 +26,8 @@ setInterval(() => {
 }, 3600000);
 
 app.use(bodyParser.json());
-if (!process.env.arangoUrl) {
-  app.use(cors());
-}
 
-app.use('/', express.static(path.join(__dirname, 'public')))
+app.use("/", express.static(path.join(__dirname, "public")));
 
 app.get("/qa/:product_id/", (req, res) => {
   let count = Number(req.query.count) || 5;
@@ -56,7 +57,7 @@ app.get("/qa/:product_id/", (req, res) => {
           reported: each.reported,
           answers: each.answers,
         };
-        for (key in temp.answers) {
+        for (let key in temp.answers) {
           temp.answers[key] = {
             id: Number(temp.answers[key]._key),
             body: temp.answers[key].body,
@@ -231,10 +232,8 @@ app.put("/qa/answer/:answer_id/report", (req, res) => {
     });
 });
 
-const PORT = process.env.PORT || 4000;
-try {
-  PORT = require("./expressPort");
-} catch {}
+const PORT = process.env.PORT || 3000;
+
 app.listen(PORT, () => {
   console.log(`Web server running on: http://localhost:${PORT}`);
 });
